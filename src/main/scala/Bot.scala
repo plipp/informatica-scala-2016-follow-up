@@ -1,3 +1,5 @@
+import Entities.{Bot, Wall}
+
 // Tutorial Bot Class
 
 class ControlFunction {
@@ -35,24 +37,27 @@ class ControlFunction {
   }
 }
 
-// NEW
-// EXERCISE: Implement findPath, so that the Bot does not crash into a wall
 class PathFinder (view: MyView) {
   def findPath() = {
-    val cellsWithOtherThanWall: Seq[(Int, Int)] = for {
+    def canMoveTo(cell: Cell) = cell.content.map {
+      entity => entity match  {
+        case Wall | Bot => false
+        case _ => true
+      }
+    }.getOrElse(true)
+
+    val possibleTargetCells: Seq[(Int, Int)] = for {
       x <- -1 to 1
-      y <- -1 to 1 if view.at(x,y)!='W' && view.at(x,y)!='M'
+      y <- -1 to 1 if canMoveTo(view.at(x,y))
     } yield (x,y)
 
-    val firstFreeCell: (Int, Int) = cellsWithOtherThanWall.head
+    val firstFreeCell: (Int, Int) = ???
     println (s"FREE CELL: ${firstFreeCell}, CHAR = ${view.at(firstFreeCell._1,firstFreeCell._2)}")
     firstFreeCell
   }
 
 }
 
-// NEW
-// EXERCISE: Implement toIndex, so that MyViewTest08 is green
 class MyView (val view: String){
   val size = scala.math.sqrt(view.length).round.toInt
   val n = size/2
@@ -60,7 +65,9 @@ class MyView (val view: String){
   require(size*size==view.length, s"length of view is not quadratic: ${view.length} != $size*$size")
 
 
-  def at(x: Int, y:Int) = view.charAt(toIndex(x,y))
+  def at(x: Int, y:Int):Cell = {
+    Cell (Entities.abbreviationToEntity.get(view.charAt(toIndex(x, y))))
+  }
 
   private def toIndex(x: Int, y: Int): Int = (n+y)*size + (n+x)
 
