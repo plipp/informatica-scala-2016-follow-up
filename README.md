@@ -8,59 +8,59 @@ dumb:
 and can't escape any more. 
 - it only knows about 'W' (Walls) and is not aware of good plants, bad plants, ... 
 
-## 2. Follow up Exercise
+## 2. Follow up Exercise - Energy Saving Bot Implementation
 
-### 2.1 Energy Saving Bot
-Make the Bot more aware of its environment, so that its `energy` stays as high as possible. E.g. eat good plants, avoid
-bad plants ... 
+### Implemented Strategy
 
-For the existing kinds of plants aka *entities* see the [Scalatron Game Rules](https://github.com/plipp/scalatron/blob/master/Scalatron/doc/markdown/Scalatron%20Game%20Rules.md).
+![alt Strategy](docs/bot-strategy/Food_Finder.png "Food Finder Bot Strategy")
+(Struktogramm)
 
-You do not need to use mini-bots for this part of the exercise. This comes later as optional task.
+*the random selection of a free cell, if no edible plants and no bad beasts/plants are around, increases the chance
+to escape half-closed rooms.
 
-#### Implementation Hints/Details
-Check out the Scala-documentation (e.g. [Scala-Tutorials](http://docs.scala-lang.org/tutorials/tour/case-classes)) for `abstract classes` or`sealed traits` and `case classes`. 
-Use them and matchers in your implementation.
+### Source and Test Code
 
-### 2.2 [Optional] Tasks/Ideas
+- Files
 
-If you want to dive deeper in the world of Scalatron, check out the [Scalatron Game Rules](https://github.com/plipp/scalatron/blob/master/Scalatron/doc/markdown/Scalatron%20Game%20Rules.md)
-and
-- send out Mini-Bots (e.g. randomly using `scala.util.Random`)
-- try out the single `Strategies`, described in the game rules.
-
-You also might want to
-- find out, how to escape from room-like wall-fragments
-- play with the [parameters of the server](https://github.com/plipp/scalatron/blob/master/Scalatron/doc/markdown/Scalatron%20Server%20Setup.md#botwar-game-options) (`$informatica-scala-2016-follow-up/server/bin/startScalatronServer.sh`)
-
-But please note: This is really **optional**.
-
-## 3. Expected Outcome
-- Unit Tests for your implementation (existing samples: `BotTest05`, `MyViewTest08`). Maybe you even want to try out
-  Test Driven Development - test first, then implement.  
+```
+    src/
+    |-- main
+    |   |-- scala
+    |       |-- Bot.scala       <- Entry Point, with classes ControlFunction, PathFinder, MyView
+    |       |-- Cell.scala      <- Helper (model)
+    |       `-- Entities.scala  <- Helper (model)
+    `-- test
+        `-- scala
+            |-- BotTest05.scala
+            |-- CellTest.scala
+            `-- MyViewTest08.scala
+```
+- Classes
+  - Entry Point: `PathFinder.findPath`
   
-  Please note, that **all** tests, thus also the existing one, should always run. If you make changes, which affect the existing
-  tests, please check, if your changes break anything. If you're change is intended and requires the adaption of a test,
-  just fix it.
-  
-- code (of course)
-- a **short** README.md (really in [Markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet) format please), which describes
-    - how to run the bot (**short** + you may just link to or copy from the 
-      the [Bot Development README](/home/plipp/work/My/informatica/informatica-scala-2016-follow-up/docs/bot-development/readme.md))
-    - special configurations (number of plants, size of the board ...) of your Scalatron Server, **only** if required. 
-    - which strategy and/or implementation you have choosen (diagrams as e.g. [UML class/state/sequence diagrams](https://en.wikipedia.org/wiki/Unified_Modeling_Language) 
-      are welcome, but not necessary) and why.
+### Specials
+
+- The Ordering of sorted Lists can be defined by implementing the `scala.math.Ordering`-Trait, as done in 
+`Cell.ByLengthAscAndBoostDesc` and `Cell.ByLengthAscAndNegBoostAsc`
+
+- The following code is a richer alternative to the traditional `scala.Enumeration`:
+```scala
+object Entities {
+
+  sealed abstract class Entity (val abbreviation: Char, val energyBoost: Int)
+
+  // the player itself
+  case object Bot extends Entity('M',0)
+//...
+  case object Hidden extends Entity ('?', 0) // an hidden obstacle
+
+  val entities = Seq(Bot,Fluppet,Snorg,Zugar,Toxifera,Wall)
+  val abbreviationToEntity = entities.map(entity => entity.abbreviation -> entity).toMap
+}
+```
+
+### How to run the `Foot Finder Bot`
     
-  Again: The README.md can be very short: It just should contain the content, one needs to understand, how to run, and how the code works.
-  
-
-### Final Date
-Sept 14th 2016 (you of course can pass the results earlier)
-
-<hr>
-  
-# Setting up the Environment
-
 1. Check out this [Scala Workshop Follow Up](https://github.com/plipp/informatica-scala-2016-follow-up):<br>
    `git clone git@github.com:plipp/informatica-scala-2016-follow-up.git` or <br>
    `git clone https://github.com/plipp/informatica-scala-2016-follow-up.git`
@@ -68,9 +68,9 @@ Sept 14th 2016 (you of course can pass the results earlier)
 2. Import the scala workshop follow-up project into IntelliJ: `informatica-scala-2016-follow-up/build.sbt`<br>
    ... can take some time as it downloads the whole internet ...
    
-3. `deploy` the Bot-plugin and start the Scalatron-Server as described in the [Bot Development README](/home/plipp/work/My/informatica/informatica-scala-2016-follow-up/docs/bot-development/readme.md)
+3. `test` and `deploy` the Bot-plugin and start the Scalatron-Server as described in the [Bot Development README](/home/plipp/work/My/informatica/informatica-scala-2016-follow-up/docs/bot-development/readme.md)
 
-# References
+ References
 
 - [Scalatron Game Rules](https://github.com/plipp/scalatron/blob/master/Scalatron/doc/markdown/Scalatron%20Game%20Rules.md)
 - [Scalatron Game Protocol](https://github.com/plipp/scalatron/blob/master/Scalatron/doc/markdown/Scalatron%20Protocol.md)
