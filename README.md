@@ -13,9 +13,9 @@ and can't escape any more.
 ### Implemented Strategy
 
 ![alt Strategy](docs/bot-strategy/Food_Finder.png "Food Finder Bot Strategy")
-(Struktogramm)
+([structogram](https://en.wikipedia.org/wiki/Nassi%E2%80%93Shneiderman_diagram))
 
-*the random selection of a free cell, if no edible plants and no bad beasts/plants are around, increases the chance
+*the random selection of a free cell, if no edible plants and no bad beasts/plants are around, increases the Bots chance
 to escape half-closed rooms.
 
 ### Source and Test Code

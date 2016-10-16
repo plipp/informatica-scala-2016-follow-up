@@ -42,7 +42,7 @@ class ControlFunction {
 class PathFinder(view: MyView) {
 
   def findPath() = {
-    val visibleCells = reachableCellsInRange(-view.n to view.n,-view.n to view.n)
+    val visibleCells = reachableCellsInRange(-view.n to view.n, -view.n to view.n)
 
     val nearestCellWithPosBoost =
       visibleCells.filter(_.boost > 0).sorted(Cell.ByLengthAscAndBoostDesc)
@@ -50,15 +50,15 @@ class PathFinder(view: MyView) {
 
     lazy val nearestCellWithNegBoost =
       visibleCells.filter(_.boost < 0).sorted(Cell.ByLengthAscAndNegBoostAsc)
-      .headOption
+        .headOption
 
-    val targetCandidate = nearestCellWithPosBoost.map(_.pos.norm)
-        .getOrElse(nearestCellWithNegBoost.map(_.pos.norm.invert)
-          .getOrElse(findFree()))
+    val targetCandidate = nearestCellWithPosBoost.map(cell => withLogging("nearestCellWithPosBoost",cell.pos.norm))
+      .getOrElse(nearestCellWithNegBoost.map(cell => withLogging("nearestCellWithNegBoost",cell.pos.norm.invert))
+        .getOrElse(withLogging("nextFree",findFree())))
 
 
-    val target = if (!freeNeighbours.contains(targetCandidate)) findFree() else targetCandidate
-    println(s"${visibleCells.mkString("\n")} -> TARGET CELL: $target in \n$view\n")
+    val target = if (withLogging("neighbourIsNotFree",!freeNeighbours.contains(targetCandidate))) findFree() else targetCandidate
+    println(s"-> TARGET CELL: $target in \n$view\n")
     target
   }
 
@@ -84,6 +84,11 @@ class PathFinder(view: MyView) {
     val fnl = freeNeighbours.toList
     val i = Random.nextInt(fnl.size)
     fnl(i)
+  }
+
+  private def withLogging[T](msg: String, value: T): T = {
+    println(s"$msg: $value")
+    value
   }
 }
 

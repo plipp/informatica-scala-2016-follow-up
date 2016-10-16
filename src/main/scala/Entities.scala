@@ -9,7 +9,7 @@ object Entities {
   case object Snorg extends Entity ('b',-150) // an evil beast (mobile and predatory, computer-controlled), red
   case object Zugar extends Entity ('P',100) // an edible plant (immobile and edible), green
   case object Toxifera extends Entity ('p',-100) // a poisonous plant (immobile and harmful), yellow
-  case object Wall extends Entity ('W',-10) // an immobile obstacle
+  case object Wall extends Entity ('W', 0) // an immobile obstacle
   case object Hidden extends Entity ('?', 0) // an hidden obstacle
 
   val entities = Seq(Bot,Fluppet,Snorg,Zugar,Toxifera,Wall)
