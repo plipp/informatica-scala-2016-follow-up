@@ -1,4 +1,6 @@
-import Entities.{Bot, Wall}
+import Entities.{Bot, Hidden, Wall}
+
+import scala.util.Random
 
 // Tutorial Bot Class
 
@@ -10,15 +12,15 @@ class ControlFunction {
   def respond(input: String) = {
     val (opCode: String, paramMap: Map[String, String]) = parse(input)
 
-    if (opCode=="React") /* e.g. React(generation=0,time=0,view=__W_W_W__,energy=100) */ {
+    if (opCode == "React") /* e.g. React(generation=0,time=0,view=__W_W_W__,energy=100) */ {
       val energy = paramMap("energy")
       val view = paramMap("view")
-      val (x,y) = findPath(view)
-      s"Move(direction=$x:$y)|Status(text=$energy)"
+      val pos = findPath(view)
+      s"Move(direction=${pos.x}:${pos.y})|Status(text=$energy)"
     } else ""
   }
 
-  private def findPath(view: String) = {
+  private def findPath(view: String): Position = {
     val pathFinder = new PathFinder(new MyView(view))
     pathFinder.findPath()
   }
@@ -37,46 +39,75 @@ class ControlFunction {
   }
 }
 
-class PathFinder (view: MyView) {
+class PathFinder(view: MyView) {
+
   def findPath() = {
-    def canMoveTo(cell: Cell) = cell.content.map {
-      entity => entity match  {
-        case Wall | Bot => false
-        case _ => true
-      }
-    }.getOrElse(true)
+    val visibleCells = reachableCellsInRange(-view.n to view.n,-view.n to view.n)
 
-    val possibleTargetCells: Seq[(Int, Int)] = for {
-      x <- -1 to 1
-      y <- -1 to 1 if canMoveTo(view.at(x,y))
-    } yield (x,y)
+    val nearestCellWithPosBoost =
+      visibleCells.filter(_.boost > 0).sorted(Cell.ByLengthAscAndBoostDesc)
+        .headOption
 
-    val firstFreeCell: (Int, Int) = ???
-    println (s"FREE CELL: ${firstFreeCell}, CHAR = ${view.at(firstFreeCell._1,firstFreeCell._2)}")
-    firstFreeCell
+    lazy val nearestCellWithNegBoost =
+      visibleCells.filter(_.boost < 0).sorted(Cell.ByLengthAscAndNegBoostAsc)
+      .headOption
+
+    val targetCandidate = nearestCellWithPosBoost.map(_.pos.norm)
+        .getOrElse(nearestCellWithNegBoost.map(_.pos.norm.invert)
+          .getOrElse(findFree()))
+
+
+    val target = if (!freeNeighbours.contains(targetCandidate)) findFree() else targetCandidate
+    println(s"${visibleCells.mkString("\n")} -> TARGET CELL: $target in \n$view\n")
+    target
   }
 
+  def reachableCellsInRange(xRange: Range, yRange: Range): Seq[Cell] = {
+    for {
+      x <- xRange
+      y <- yRange
+      c = view.at(x, y) if isReachable(c)
+    } yield c
+  }
+
+  private val freeNeighbours: Set[Position] =
+    reachableCellsInRange(-1 to 1, -1 to 1).map(_.pos).toSet
+
+  private def isReachable(cell: Cell) = cell.content.forall {
+    entity => entity match {
+      case Wall | Bot | Hidden => false
+      case _ => true
+    }
+  }
+
+  private def findFree(): Position = {
+    val fnl = freeNeighbours.toList
+    val i = Random.nextInt(fnl.size)
+    fnl(i)
+  }
 }
 
-class MyView (val view: String){
+class MyView(val view: String) {
   val size = scala.math.sqrt(view.length).round.toInt
-  val n = size/2
+  val n = size / 2
 
-  require(size*size==view.length, s"length of view is not quadratic: ${view.length} != $size*$size")
+  val center = Position(0, 0)
+
+  require(size * size == view.length, s"length of view is not quadratic: ${view.length} != $size*$size")
 
 
-  def at(x: Int, y:Int):Cell = {
-    Cell (Entities.abbreviationToEntity.get(view.charAt(toIndex(x, y))))
+  def at(x: Int, y: Int): Cell = {
+    Cell(Position(x, y), Entities.abbreviationToEntity.get(view.charAt(toIndex(x, y))))
   }
 
-  private def toIndex(x: Int, y: Int): Int = (n+y)*size + (n+x)
+  private def toIndex(x: Int, y: Int): Int = (n + y) * size + (n + x)
 
   override def toString: String = {
-    def toLines(rest:String): String =
+    def toLines(rest: String): String =
       if (rest.isEmpty) ""
       else {
         val (line, remainingLines) = rest.splitAt(size)
-        line + "\n" +toLines(remainingLines)
+        line + "\n" + toLines(remainingLines)
       }
     toLines(view)
   }

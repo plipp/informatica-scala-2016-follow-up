@@ -1,3 +1,4 @@
+import Entities.{Bot, Toxifera, Zugar}
 import org.scalatest.FunSuite
 import org.scalatest.Matchers._
 
@@ -17,19 +18,19 @@ class MyViewTest08 extends FunSuite {
     myView.toString should be("ABCDE\nFGHIJ\nKLMNO\nPQRST\nUVWXY\n")
   }
 
-  test("""[VIEW at] in the center should be 'M'""") {
+  test("""[VIEW at] in the center should be my 'Bot'""") {
     val myView = new MyView("ABCDEFGHIJKLMNOPQRSTUVWXY")
-    myView.at(0,0) should be('M')
+    myView.at(0,0) should be (Cell(Position(0,0),Some(Bot)))
   }
 
-  test("""[VIEW at] in the left upper corner should be 'A'""") {
-    val myView = new MyView("ABCDEFGHIJKLMNOPQRSTUVWXY")
-    myView.at(-2,-2) should be('A')
+  test("""[VIEW at] in the left upper corner should be an 'Zugar'""") {
+    val myView = new MyView("PBCDEFGHIJKLMNOPQRSTUVWXY")
+    myView.at(-2,-2) should be(Cell(Position(-2,-2),Some(Zugar)))
   }
 
-  test("""[VIEW at] in the right bottom corner should be 'Y'""") {
-    val myView = new MyView("ABCDEFGHIJKLMNOPQRSTUVWXY")
-    myView.at(2,2) should be('Y')
+  test("""[VIEW at] in the right bottom corner should be 'Toxifera'""") {
+    val myView = new MyView("ABCDEFGHIJKLMNOPQRSTUVWXp")
+    myView.at(2,2) should be(Cell(Position(2,2),Some(Toxifera)))
   }
 
   test("""[VIEW at] pos outside should cause an IndexOutOfBoundsException""") {
