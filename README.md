@@ -68,7 +68,7 @@ object Entities {
 2. Import the scala workshop follow-up project into IntelliJ: `informatica-scala-2016-follow-up/build.sbt`<br>
    ... can take some time as it downloads the whole internet ...
    
-3. `test` and `deploy` the Bot-plugin and start the Scalatron-Server as described in the [Bot Development README](/home/plipp/work/My/informatica/informatica-scala-2016-follow-up/docs/bot-development/readme.md)
+3. `test` and `deploy` the Bot-plugin and start the Scalatron-Server as described in the [Bot Development README](https://github.com/plipp/informatica-scala-2016/tree/master/docs/bot-development)
 
  References
 
