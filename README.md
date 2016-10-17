@@ -70,7 +70,13 @@ object Entities {
    
 3. `test` and `deploy` the Bot-plugin and start the Scalatron-Server as described in the [Bot Development README](https://github.com/plipp/informatica-scala-2016/tree/master/docs/bot-development)
 
- References
+# Potential Improvements
+The Bot currently gets stuck if its environment does not change, e.g. it cycles between [bord 1](./src/test/resources/stuckBot_1_0.txt) and 
+[bord 2](./src/test/resources/stuckBot_1_1.txt).
+
+This could be detected by tracking positions and detecting cycles within. 
+
+# References
 
 - [Scalatron Game Rules](https://github.com/plipp/scalatron/blob/master/Scalatron/doc/markdown/Scalatron%20Game%20Rules.md)
 - [Scalatron Game Protocol](https://github.com/plipp/scalatron/blob/master/Scalatron/doc/markdown/Scalatron%20Protocol.md)
